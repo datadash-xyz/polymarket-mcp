@@ -1,0 +1,6 @@
+.next
+node_modules
+pnpm-lock.yaml
+# The zip's package, kept as delivered so it can be diffed against the original.
+src/feat/mcp
+src/app/landing.css

@@ -1,0 +1,610 @@
+/*
+ * Custom CSS for the static landing, on top of Tailwind v4 (tokens live in index.html).
+ * Mirrors the published Framer site: near-black ground, DM Sans display type, Inter body,
+ * violet pills, deep-navy bento cards with a violet radial glow, grey-to-white gradient
+ * headlines. Only what utilities cannot express lives here.
+ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Grey → white → grey headline fill, as on the Framer page. */
+.text-gradient {
+    background: linear-gradient(90deg, #a6a6a9 0%, #ffffff 50%, #a6a6a9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.text-gradient-soft {
+    background: linear-gradient(90deg, #cccccc 0%, #ffffff 50%, #cccccc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Hero backdrop: one violet radial at the top centre, fading into the ground. */
+.hero-glow {
+    background:
+        radial-gradient(55% 45% at 50% 0%, rgba(110, 92, 231, 0.32), transparent 70%),
+        radial-gradient(30% 30% at 70% 20%, rgba(70, 40, 160, 0.25), transparent 70%);
+}
+
+/* The purple light line that sits on the top edge of the product window. */
+.light-line {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(190, 175, 255, 0.9) 30%, #ffffff 50%, rgba(190, 175, 255, 0.9) 70%, transparent);
+    filter: drop-shadow(0 0 18px rgba(140, 120, 255, 0.9)) drop-shadow(0 0 40px rgba(110, 92, 231, 0.6));
+}
+.light-halo {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    top: -120px;
+    height: 240px;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(110, 92, 231, 0.45), transparent 70%);
+    pointer-events: none;
+}
+
+/* Bento cards: deep navy with a violet glow anchored to one corner. */
+.bento {
+    position: relative;
+    overflow: hidden;
+    background: #0a0b24;
+    border-radius: 20px;
+}
+.bento::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--glow, radial-gradient(70% 60% at 100% 100%, rgba(110, 92, 231, 0.55), transparent 70%));
+}
+.bento > * {
+    position: relative;
+}
+
+/* Feature and pricing cards: hairline border via inset shadow so the radius stays crisp. */
+.card {
+    background: #05050a;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+        0 8px 24px rgba(0, 0, 0, 0.04);
+}
+.card-pro {
+    background: linear-gradient(180deg, #0f0b2e 0%, #1a1252 100%);
+}
+
+/* Feature cards: title, one product crop on a stage, one line of copy. The image carries the card,
+   so the type stays small and centred. */
+.feature {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    text-align: center;
+}
+.feature-title {
+    padding: 12px 24px 0;
+    line-height: 1.3;
+}
+/* Card titles link to the matching app page. Same look as plain text; the underline shows on hover
+   and focus only. The gradient text fill is inherited, so the link sets nothing but decoration. */
+.feature-link:hover,
+.feature-link:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.5);
+    text-underline-offset: 4px;
+}
+.feature-copy {
+    padding: 2px 24px 22px;
+    text-wrap: balance;
+}
+/* The stage clips the crop and fades it into the card at the bottom, so a tall fragment reads as
+   "the list goes on" instead of ending on a hard edge. */
+.feature-stage {
+    position: relative;
+    /* Grows when a neighbour's copy runs a line longer, so every card in a row ends its copy on the
+       same baseline instead of leaving a gap under the shorter one. */
+    flex: 1 0 288px;
+    margin-top: 6px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 98%);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent 98%);
+}
+@media (max-width: 639px) {
+    .feature-stage {
+        flex-basis: 256px;
+    }
+}
+.feature-stage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(62% 72% at 50% 42%, rgba(110, 92, 231, 0.3), transparent 72%);
+    opacity: 0.7;
+    transition: opacity 0.4s;
+}
+.feature-shot {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    /* Shown at --w, or a little less than the card when the card is narrower than that. */
+    width: min(var(--w, 302px), calc(100% - var(--gutter, 36px)));
+    max-width: none;
+    height: auto;
+    border-radius: 12px;
+    /* --lift is 0 at rest; hovering the card raises every crop by the same amount. */
+    transform: translate(-50%, var(--lift, 0px));
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.09),
+        0 24px 48px -16px rgba(0, 0, 0, 0.8);
+}
+/* A wide table runs edge to edge as a band instead of floating as a panel, so all of its columns
+   fit across one card. */
+.feature-stage--band .feature-shot {
+    top: 8px;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    /* Not centred like the floating crops, so no -50% shift, but it still takes the hover lift. */
+    transform: translateY(var(--lift, 0px));
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+/* A crop short enough to sit in the stage whole (Wallet analytics): centred, with no fade, so the
+   stats at the bottom read at full strength. */
+.feature-stage--fit {
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+.feature-stage--fit .feature-shot {
+    top: 50%;
+    transform: translate(-50%, calc(-50% + var(--lift, 0px)));
+}
+@media (max-width: 639px) {
+    /* Phones shorten every stage to 256px. This crop is shown whole, so its stage keeps the full
+       288px instead of the image shrinking, which keeps its side spacing equal to the other cards. */
+    .feature-stage--fit {
+        flex-basis: 288px;
+    }
+}
+/* A crop that fits the stage whole (the chart) sits in the middle with no fade: its first buys are
+   at the bottom of the plot, exactly where the fade would eat them. */
+.feature-stage--whole {
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+.feature-stage--whole .feature-shot {
+    top: 50%;
+    transform: translate(-50%, calc(-50% + var(--lift, 0px)));
+}
+@media (max-width: 639px) {
+    /* On a phone the chart keeps a readable size and runs off the left edge, because the hovered sell
+       and its tooltip sit on the right of the plot, next to the position's profit. */
+    .feature-stage--whole {
+        -webkit-mask-image: linear-gradient(to left, #000 68%, transparent 98%);
+        mask-image: linear-gradient(to left, #000 68%, transparent 98%);
+    }
+    .feature-stage--whole .feature-shot {
+        left: auto;
+        right: 20px;
+        width: 560px;
+        transform: translateY(calc(-50% + var(--lift, 0px)));
+    }
+}
+/* A short crop sits in the middle of the stage with its address pill, instead of hanging from the top. */
+.feature-stack {
+    position: absolute;
+    top: 46%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    transform: translateY(calc(-50% + var(--lift, 0px)));
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (max-width: 639px) {
+    /* The phone stage is 32px shorter, so centre the stack exactly and tighten it to keep the pill clear. */
+    .feature-stack {
+        top: 50%;
+        gap: 10px;
+    }
+}
+.feature-stack .feature-shot {
+    position: static;
+    transform: none;
+    transition: none;
+}
+.feature-url {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 5px 12px 5px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    color: #cccccc;
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+}
+/* The MCP card's example chat: built in HTML because there is no app screen to crop, and dressed
+   like the crops around it (same panel, hairline and shadow come from .feature-shot). */
+.agent-chat {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: #0b0c12;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.agent-ask {
+    align-self: flex-end;
+    max-width: 88%;
+    border-radius: 12px 12px 3px 12px;
+    padding: 7px 11px;
+    background: rgba(110, 92, 231, 0.28);
+    color: #ffffff;
+}
+.agent-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #cccccc;
+    font-size: 11px;
+}
+.agent-tool > svg {
+    color: var(--color-brand-soft);
+}
+.agent-tool > span {
+    color: var(--color-dim);
+}
+.agent-tool > span::before {
+    content: '·';
+    margin-right: 6px;
+}
+.agent-rows {
+    display: flex;
+    flex-direction: column;
+    border-radius: 9px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+}
+.agent-rows > li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    color: #f2f2f2;
+}
+.agent-rows > li + li {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+/* Market icon, title over a price chip and the share count, score on the right: the Signals table's
+   own row, at about 80% of its size. */
+.agent-icon {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+}
+.agent-main {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+}
+.agent-market {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+.agent-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-dim);
+    font-size: 10.5px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.agent-side {
+    flex: none;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10.5px;
+    font-weight: 500;
+}
+.agent-yes {
+    background: rgba(74, 222, 128, 0.14);
+    color: #6fd391;
+}
+.agent-rows b {
+    flex: none;
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: #ffffff;
+}
+
+@media (hover: hover) {
+    .feature:hover {
+        --lift: -6px;
+    }
+    .feature:hover .feature-stage::before {
+        opacity: 1;
+    }
+}
+
+/* Scroll reveal. */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+}
+[data-reveal][data-reveal-delay='1'] {
+    transition-delay: 0.06s;
+}
+[data-reveal][data-reveal-delay='2'] {
+    transition-delay: 0.12s;
+}
+[data-reveal][data-reveal-delay='3'] {
+    transition-delay: 0.18s;
+}
+
+/* Feed rows inside the alerts card. */
+.feed-row {
+    animation: row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes row-in {
+    from {
+        opacity: 0;
+        transform: translateX(28px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Ping dot on live labels. */
+@keyframes ping {
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+.ping {
+    animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Navbar frosted state. */
+.nav {
+    transition:
+        background-color 0.4s,
+        border-color 0.4s;
+    border-bottom: 1px solid transparent;
+}
+.nav.is-scrolled {
+    background: rgba(3, 3, 3, 0.75);
+    backdrop-filter: blur(20px);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* FAQ accordion: native details, plus-to-cross icon. */
+details summary {
+    list-style: none;
+    cursor: pointer;
+}
+details summary::-webkit-details-marker {
+    display: none;
+}
+details .plus {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+details[open] .plus {
+    transform: rotate(45deg);
+}
+
+/* Pricing: one billing switch above the cards, and a glow that rises from behind them. */
+.billing-label {
+    color: var(--color-dim);
+    transition: color 0.2s;
+}
+.billing-label.is-active {
+    color: #ffffff;
+}
+.billing-switch {
+    position: relative;
+    flex: none;
+    width: 44px;
+    height: 24px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.14);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.billing-switch > span {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.billing-switch[aria-checked='true'] {
+    background: var(--color-brand);
+}
+.billing-switch[aria-checked='true'] > span {
+    transform: translateX(20px);
+}
+.billing-switch:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+}
+/* The cards are opaque, so the light only shows above them and in the gaps between them. */
+.pricing-glow {
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    top: -170px;
+    width: min(980px, 94%);
+    height: 420px;
+    transform: translateX(-50%);
+    background:
+        radial-gradient(34% 40% at 50% 42%, rgba(150, 130, 255, 0.5), transparent 72%),
+        radial-gradient(50% 50% at 50% 50%, rgba(110, 92, 231, 0.42), rgba(110, 92, 231, 0.14) 45%, transparent 72%);
+    filter: blur(6px);
+    pointer-events: none;
+}
+
+/* Hero accent: the tail phrase resolves from a soft blur into focus. It used to wait 0.7s for the
+   headline's own fade and then take 1.1s, so "prediction markets" stayed missing for almost two
+   seconds after load. It now starts at 0.1s and lasts 0.6s, alongside the headline's fade. Plain CSS,
+   no scroll trigger, since the hero is always in the first viewport. */
+@keyframes blur-in {
+    from {
+        filter: blur(10px);
+        opacity: 0;
+    }
+    to {
+        filter: blur(0);
+        opacity: 1;
+    }
+}
+.hero-accent {
+    display: inline-block;
+    animation: blur-in 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hero buttons, after fomo.family: a translucent rounded rectangle with a hairline border. On hover
+   the fill brightens and an arrow slides in beside the label, so the label shifts left a little. */
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 54px;
+    border-radius: 12px;
+    border: 1px solid rgba(203, 208, 235, 0.12);
+    overflow: hidden;
+    color: #f7f7f7;
+    font-size: 17px;
+    font-weight: 600;
+    white-space: nowrap;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition:
+        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hero-btn-primary {
+    background: rgba(110, 92, 231, 0.55);
+}
+.hero-btn-primary:hover,
+.hero-btn-primary:focus-visible {
+    background: rgba(110, 92, 231, 0.88);
+}
+.hero-btn-glass {
+    background: rgba(255, 255, 255, 0.12);
+}
+.hero-btn-glass:hover,
+.hero-btn-glass:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
+}
+.hero-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+}
+.hero-btn-arrow {
+    display: inline-flex;
+    align-items: center;
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+        width 0.15s ease-out,
+        opacity 0.15s ease-out;
+}
+.hero-btn-arrow > svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+}
+.hero-btn:hover .hero-btn-arrow,
+.hero-btn:focus-visible .hero-btn-arrow {
+    width: 28px;
+    opacity: 1;
+}
+@media (max-width: 639px) {
+    .hero-btn-glass {
+        display: none;
+    }
+}
+
+/* Product window tilt. landing.js writes the transform on scroll; this only promotes the layer
+   so the 3D transform stays smooth, and pins the pivot to the centre as on the Framer page. */
+.product-tilt {
+    transform-origin: 50% 50%;
+    will-change: transform;
+}
+
+/* Motion-sensitive users: everything settles instantly. */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .ping,
+    .feed-row {
+        animation: none;
+    }
+    .billing-switch,
+    .billing-switch > span {
+        transition: none;
+    }
+    .hero-btn,
+    .hero-btn-arrow {
+        transition: none;
+    }
+    .feature-shot,
+    .feature-stack,
+    .feature-stage::before {
+        transition: none;
+    }
+    .hero-accent {
+        animation: none;
+        filter: none;
+        opacity: 1;
+    }
+    [data-reveal] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

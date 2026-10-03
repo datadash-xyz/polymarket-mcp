@@ -1,0 +1,30 @@
+/*
+ * The page's Tailwind build, with the approved static page's tokens (reference/mcp/index.html in
+ * datadash-mcp-page.zip) in place of the home page package's theme.css, which the zip does not include.
+ * The two fonts come from next/font, whose variables are on <html> (see layout.tsx), so `--font-*`
+ * resolve on :root.
+ *
+ * `source(none)` limits the build to the classes written under src/, the generated scene included.
+ */
+@import 'tailwindcss' source(none);
+@source '..';
+
+@theme {
+    --color-background: #030303;
+    --color-foreground: #ffffff;
+    --color-muted-foreground: #cccccc;
+    --color-dim: #8a8a93;
+    --color-card: #05050a;
+    --color-bento: #0a0b24;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-brand: #6e5ce7;
+    --color-brand-hover: #7d6cf0;
+    --color-brand-soft: #beafff;
+    --color-fey-green: #539e55;
+    --color-fey-red: #dc6973;
+    --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
+    /* McpPage's wrapper sets `font-landing`, the home page package's name for the same body face. */
+    --font-landing: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: var(--font-dm-sans), 'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
